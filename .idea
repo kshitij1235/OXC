@@ -1,0 +1,24 @@
+features of the application 
+# IDEAS FOR THE PROJECT 
+
+- log all the plans 
+- log all the progress
+
+[DONE] The code logic is implemented
+- comment in the code and see everwhere 
+     - FIXME (yellow)  
+     - TODO  (blue)
+     - ERROR (Red)
+     - PLAN  (white)
+     - DONE  (Green)
+
+
+
+# version control file 
+
+- .oxc 
+     - backup (file backup) 
+          - hour_minute_day_month_year
+               -  all the files 
+     - logs (to keep all the logs of the       comments)     
+          - hour_minute_day_month_year

@@ -1,0 +1,5 @@
+
+
+def _count_generator(counter_):
+    while b := counter_(1024 * 1024):
+        yield b

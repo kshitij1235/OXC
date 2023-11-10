@@ -1,0 +1,7 @@
+env
+.git
+oxc
+__pycache__
+tests
+.vscode
+readme.md
