@@ -1,6 +1,6 @@
-/env
-/.oxc
+/env/*
+/.oxc/*
 /tempCodeRunnerFile.py
-/.vscode
-/__pycache__
-/oxc/__pycache__
+/.vscode/*
+/__pycache__/*
+/oxc/__pycache__/*
