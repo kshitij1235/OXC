@@ -3,7 +3,8 @@ from typer import echo
 from typing import *
 import os 
 from colorama import Fore , init , Style
-
+import os
+from filemod import delete_specific_line
 
 class color_text:
     
@@ -40,9 +41,7 @@ class color_text:
         string = f'{prefix_text} {color}{content}'
     
         return string 
-
-
-
+    
 class content_operations : 
     @staticmethod
     def format_comment(comment:str,flag="None") -> str:
@@ -73,39 +72,32 @@ class content_operations :
         except Exception as e : 
             return False
 
-
-
-import os
-from filemod import delete_specific_line
-
-
-
 class file_operations:
 
     @staticmethod
-    def scan() -> list:
+    def scan():
         '''
-        scan the files that are in the scope and 
-        get all the files
+        scan files which are in the scope *NOT IGNORED FILES*
         '''
-        scanned_files = []    
-        # Specify the top-level directory you want to start from
         top_directory = os.getcwd()
-        skip_directory = set(content_operations.get_content(".ignore_scan"))  # Convert to set for faster lookup
+        skip_entries = set()
+
+        try:
+            with open(".ignore_scan", "r") as f:
+                for line in f:
+                    skip_entries.add(line.strip())
+        #if user chose not to include a .ignore_scan file
+        except FileNotFoundError: 
+            pass
 
         for root, dirs, files in os.walk(top_directory):
-            # Remove ignored directories directly from dirs list
-            dirs[:] = [d for d in dirs if d not in skip_directory]
-            
-            for file in files:
-                file_path = os.path.join(root, file)
-                if file not in skip_directory:
-                    scanned_files.append(file_path)
+            # Remove ignored directories from dirs list
+            dirs[:] = [dir_ for dir_ in dirs if dir_ not in skip_entries]
 
-        if not scanned_files:
-            color_text.color_print("nothing on the scope")
-            
-        return scanned_files
+            for file in files:
+                if file not in skip_entries:
+                    yield os.path.join(root, file)
+                    
     @staticmethod
     def remove_comment(file,line_number):
         return delete_specific_line(file, line_number)
@@ -125,3 +117,5 @@ class file_operations:
             return True
         except FileNotFoundError:
             return False
+        
+

@@ -110,31 +110,46 @@ import os
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 
+
+
 def copy_file(file_path, destination_folder):
     file_name = os.path.basename(file_path)
     destination_path = os.path.join(destination_folder, file_name)
     shutil.copy(file_path, destination_path)
 
-def copy_files_to_backup(file_list)->bool:
 
-    try: 
-        backup_folder = ".oxc/backup"
-        backup_folder_path = os.path.join(backup_folder, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
-        os.makedirs(backup_folder_path)
+class Backup:
 
-        # Copy files to the backup folder using ThreadPoolExecutor
-        with ThreadPoolExecutor() as executor:
-            executor.map(lambda file_path: copy_file(file_path, backup_folder_path), file_list)
+    @staticmethod
+    def get_latest_backup()->str:
+        ...
 
-        # Create oxc_conf file with backup details
-        backup_details = f"Backup created on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\nDetails: ...\n"
-        oxc_conf_path = os.path.join(backup_folder_path, 'oxc_conf.txt')
-        with open(oxc_conf_path, 'w') as oxc_conf_file:
-            oxc_conf_file.write(backup_details)
-    except Exception :
-        return False
+    @staticmethod
+    def copy_files_to_backup(file_list,backup_comment="")->bool:
 
-    return True
+        try: 
+            backup_folder = ".oxc/backup"
+            backup_folder_path = os.path.join(backup_folder, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            os.makedirs(backup_folder_path)
+
+            with ThreadPoolExecutor() as executor:
+                executor.map(lambda file_path: copy_file(file_path, backup_folder_path), file_list)
+
+            backup_details = (
+                "{ \n" +
+                f"backup : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n" +
+                f"comment : {backup_comment} \n" +
+                "}"
+            )
+            oxc_conf_path = os.path.join(backup_folder_path, 'backup.oxc')
+
+            with open(oxc_conf_path, 'w') as oxc_conf_file:
+                oxc_conf_file.write(backup_details)
+        except Exception as e:
+            print(e)
+            return False
+
+        return True
 
 
 #endregion

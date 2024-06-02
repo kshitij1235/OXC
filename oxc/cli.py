@@ -3,14 +3,11 @@ import os
 from oxc.core import *
 from oxc.oxc import __app_name__,__version__
 from typing import *
-from oxc.dependency import _version_callback,scan_flags,files_in_scope,create_workspace,copy_files_to_backup
+from oxc.dependency import *
+from oxc.dependency import _version_callback
 from oxc import core
 
 app = typer.Typer()
-
-
-
-
 
 # scann all the files 
 @app.command()
@@ -38,9 +35,9 @@ def status()->None :
     # in the scope of the application 
     files_in_scope()
 
-
+import pytn
 #region backup
-
+from tabulate import tabulate   
 @app.command()
 def backup(backup_comment: str = typer.Option(
             str,
@@ -59,11 +56,17 @@ def backup(backup_comment: str = typer.Option(
     
     if backup_comment:
         try : 
-            copy_files_to_backup(core.scan())
+            print(backup_comment)
+            Backup.copy_files_to_backup(core.file_operations.scan(),backup_comment)
             typer.echo("Back created")
         except Exception as e : 
             typer.echo(f"failed to create backup {e}")
         finally:typer.Exit(1)
+    if scan : 
+        
+        files = os.listdir("./.oxc/backup/")
+        data=[[index+1,pytn.extract_values(f"./.oxc/backup/{file_name}/backup.oxc")[3],*file_name.split("_")] for index ,file_name in enumerate(files)]
+        typer.echo(tabulate(data, headers=["id", "backup", "date","Time"]))
 
 #endregion
 
